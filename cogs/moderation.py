@@ -5,13 +5,51 @@ class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(name="ping", help="Ping the bot to see if it's online.")
     async def ping(self, ctx):
         await ctx.send("Pong!")
 
-    @commands.command()
-    async def serverinfo():
-        pass
+
+    @commands.command(name="serverinfo", help="Show information about the server.")
+    async def serverinfo(self, ctx):
+        guild = ctx.guild
+
+        embed = discord.Embed(
+            title=guild.name,
+            color=discord.Color.blurple()
+        )
+
+        embed.set_thumbnail(url=guild.icon.url if guild.icon else discord.Embed.Empty)
+
+        embed.add_field(name="Owner", value=f"{guild.owner}", inline=False)
+        embed.add_field(name="Members", value=f"{guild.member_count}", inline=True)
+        embed.add_field(name="roles", value=len(guild.roles), inline=True)
+
+        role_name = "moderators"
+        role = discord.utils.get(guild.roles, name=role_name)
+
+        if role:
+            mods = [member.name for member in guild.members if role in member.roles]
+
+            if not mods:
+                value = "None"
+            else:
+                value = ", ".join(mods[:10]) # Show only 10 for readability
+                if len(mods) > 10:
+                    value += f" ...and {len(mods) - 10} more"
+
+            embed.add_field(name=f"{role.name}", value=value, inline=False)
+        else:
+            embed.add_field(name="Admins", value="Role not found", inline=False)
+
+        text_channels = len([c for c in guild.text_channels])
+        voice_channels = len([c for c in guild.voice_channels])
+        embed.add_field(name="Text Channels", value=text_channels, inline=False)
+        embed.add_field(name="Voice Channels", value=voice_channels, inline=False)
+
+        embed.add_field(name="Created On", value=guild.created_at.strftime("%b %d, %Y"), inline=False)
+
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def userinfo(user):
@@ -96,7 +134,7 @@ class Moderation(commands.Cog):
         except Exception as e:
             await ctx.respond(f"An error occurred: {e}", ephemeral=True)
 
-
+    @commands.command(name="mute", help="Mute a user on the server.")
     async def mute(user):
         pass
 
