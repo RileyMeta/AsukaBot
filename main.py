@@ -10,6 +10,7 @@ load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 
 intents = discord.Intents.default()
+intents.members = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Load Cogs
@@ -31,7 +32,7 @@ async def on_ready():
     await bot.sync_commands()
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="over the server"))
     print(f"[{Colors.red}{get_timestamp()}{Colors.reset}] Commands synced.")
-    print(f"[{Colors.red}{bot.user}{Colors.reset} @ {Colors.red}{get_timestamp()}{Colors.reset}] | EVA Unit 2, Standing By.")
+    print(f"[{Colors.red}{bot.user}{Colors.reset} @ {Colors.red}{get_timestamp()}{Colors.reset}] EVA Unit 2, Standing By.")
 
 @bot.event
 async def stop():
