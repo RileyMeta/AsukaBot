@@ -43,7 +43,7 @@ async def on_ready():
 @bot.event
 async def on_member_join(member):
     messages = [
-            "Welcome, new pilot. Report to the command center — Asuka doesn't like slackers.",
+            "Welcome, new pilot. Report to the command center — Ikari doesn't like slackers.",
             "Congratulations! You've been selected for synchronization.",
             "Welcome to the GeoFront. Try not to cause a Third Impact.",
             "Another soul joins Nerv. Try not to annoy me as much as Shinji does.",
