@@ -6,7 +6,7 @@ class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(name="hello", help="Say hello to the bot")
     async def hello(self, ctx):
         greetings = ['Hi', 'Hello', 'Hi there']
         greeting = random.randrange(len(greetings))
@@ -22,7 +22,7 @@ class Fun(commands.Cog):
 
         await ctx.send(num)
 
-    @commands.command()
+    @commands.command(name="flip", help="Flip a coin: heads or tails")
     async def flip(self, ctx):
         num = random.randrange(0, 2)
         if num == 0:
@@ -30,9 +30,6 @@ class Fun(commands.Cog):
         else:
             prompt = "Tails"
         await ctx.send(prompt)
-
-    async def poll(question, options = []):
-        pass
 
     @discord.slash_command(name="gm", description="Have the bot say good morning")
     async def gm(self, ctx):
