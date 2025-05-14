@@ -52,12 +52,44 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def userinfo(user):
-        pass
+    async def userinfo(self, ctx, member: discord.Member = None):
+        member = member or ctx.author
+        user = member._user if hasattr(member, "_user") else member
+
+        embed = discord.Embed(
+            title=f"User Info: {member.display_name}",
+            color=discord.Color.teal(),
+            timestamp=ctx.message.created_at
+        )
+
+        embed.set_thumbnail(url=member.display_avatar.url)
+        embed.add_field(name="User ID", value=member.id, inline=False)
+        embed.add_field(name="Username", value=f"{member.name}#{member.discriminator}", inline=False)
+        embed.add_field(name="Account Created", value=member.created_at.strftime("%Y-%m-%d %H:%M:%S"), inline=False)
+
+        try:
+            fetched_user = await ctx.bot.fetch_user(member.id)
+            if hasattr(fetched_user, "pronouns") and fetched_user.pronouns:
+                embed.add_field(name="Pronouns", value=fetched_user.pronouns, inline=False)
+        except Exception as e:
+            pass
+
+        embed.set_footer(text=f"Requested by {ctx.author.display_name}", icon_url=ctx.author.display_avatar.url)
+
+        await ctx.send(embed=embed)
 
     @commands.command()
-    async def avatar(user):
-        pass
+    async def avatar(self, ctx, member: discord.Member = None):
+        member = member or ctx.author # Default to you if you don't provide a member
+
+        embed = discord.Embed(
+            title=f"{member.display_name}",
+            color=discord.Color.og_blurple()
+        )
+        embed.set_image(url=member.display_avatar.url)
+        embed.set_footer(text=f"Requested by {ctx.author.display_name}", icon_url=ctx.author.display_avatar.url)
+
+        await ctx.send(embed=embed)
 
     @discord.slash_command(name="kick", description="Kick a user from the server.")
     @commands.has_permissions(kick_members=True)
