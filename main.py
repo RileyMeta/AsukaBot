@@ -61,7 +61,28 @@ async def on_member_join(member):
     if channel:
         await channel.send(f"{member.mention}\n{messages[choice]}")
 
+@bot.event
+async def on_member_remove(member):
+    messages = [
+            "Another soul departs from the command center. Sync ratio lost.",
+            "Connection terminated. Their mission here is complete.",
+            "Pilot has ejected. The LCL will settle without them.",
+            "One less plug in the system. Hold the line.",
+            "They’ve left the GeoFront. Let’s hope the Angels don’t notice.",
+            "They’ve gone radio silent. God’s in his heaven, all’s right with the world…?",
+            "And just like that, another presence fades from the AT Field.",
+            "One more vanishes into the void. Stay strong, pilots.",
+            "They’ve logged out of the simulation. Reality awaits.",
+            "Another entry plug disengaged. Safe travels, pilot."
+    ]
 
+    choice = random.randrange(len(messages) - 1)
+
+    channel_id = 1292201687552888872
+    channel = member.guild.get_channel(channel_id)
+
+    if channel:
+        await channel.send(f"{member.display_name}\n{messages[choice]}")
 
 if __name__ == "__main__":
     load_cogs()
