@@ -4,6 +4,7 @@ import discord
 from dotenv import load_dotenv
 from discord.ext import commands
 from const import Colors
+import random
 
 CHANNEL_ID = 1266186395127644300
 load_dotenv()
@@ -34,10 +35,33 @@ async def on_ready():
     print(f"[{Colors.red}{get_timestamp()}{Colors.reset}] Commands synced.")
     print(f"[{Colors.red}{bot.user}{Colors.reset} @ {Colors.red}{get_timestamp()}{Colors.reset}] EVA Unit 2, Standing By.")
 
+# @bot.event
+# async def stop():
+#     print(f"[Time: {get_timestamp()}]")
+#     print(f"[{Colors.yellow}ALERT{reset}] EVA Unit 2, Offline.")
+
 @bot.event
-async def stop():
-    print(f"[Time: {get_timestamp()}]")
-    print(f"[{Colors.yellow}ALERT{reset}] EVA Unit 2, Offline.")
+async def on_member_join(member):
+    messages = [
+            "Welcome, new pilot. Report to the command center — Asuka doesn't like slackers.",
+            "Congratulations! You've been selected for synchronization.",
+            "Welcome to the GeoFront. Try not to cause a Third Impact.",
+            "Another soul joins Nerv. Try not to annoy me as much as Shinji does.",
+            "Initiating entry plug sequence... Welcome aboard, Rookie.",
+            "Welcome! We were starting to think you were another dummy plug.",
+            "Sync ratio rising — we’ve got a new member!",
+            "Welcome to NERV HQ. Don't worry, we won't make you pilot an Eva... probably."
+    ]
+
+    choice = random.randrange(len(messages) - 1)
+
+    channel_id = 1292201687552888872
+    channel = member.guild.get_channel(channel_id)
+
+    if channel:
+        await channel.send(f"{member.mention}\n{messages[choice]}")
+
+
 
 if __name__ == "__main__":
     load_cogs()
