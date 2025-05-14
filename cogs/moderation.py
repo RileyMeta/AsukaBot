@@ -1,3 +1,4 @@
+import time
 import discord
 from discord.ext import commands
 
@@ -5,10 +6,17 @@ class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="ping", help="Ping the bot to see if it's online.")
+    @commands.command(name="ping", help="Ping the bot to see it's latency.")
     async def ping(self, ctx):
-        await ctx.send("Pong!")
+        start_time = time.perf_counter()
+        message = await ctx.send("Pong!")
+        end_time = time.perf_counter()
 
+        latency = self.bot.latency * 1000 # in ms
+        overall = (end - start) * 1000
+
+        await message.edit(content=f"Pong!\nLatency: {latency:.2f}ms")
+        # await message.edit(content=f"\n{overall:.2f}ms")
 
     @commands.command(name="serverinfo", help="Show information about the server.")
     async def serverinfo(self, ctx):
