@@ -13,7 +13,7 @@ class Moderation(commands.Cog):
         end_time = time.perf_counter()
 
         latency = self.bot.latency * 1000 # in ms
-        overall = (end - start) * 1000
+        overall = (end_time - start_time) * 1000
 
         await message.edit(content=f"Pong!\nLatency: {latency:.2f}ms")
         # await message.edit(content=f"\n{overall:.2f}ms")
@@ -224,7 +224,7 @@ class Moderation(commands.Cog):
     @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx, amount: int = 0):
         if amount < 1:
-            await ctx.send("Please specify a number of messages.")
+            await ctx.send("Please specify a number of messages.", ephemeral=True)
             return
 
         try:
@@ -235,6 +235,10 @@ class Moderation(commands.Cog):
         except Exception as e:
             await ctx.send(f"Unexpected error: {e}")
 
+    @commands.has_permissions(send_polls=True)
+    async def poll(question, options = []):
+        pass
+
 
     ############################
     #      Error handling      #
@@ -242,28 +246,28 @@ class Moderation(commands.Cog):
     @kick.error
     async def kick_error(self, ctx, error):
         if isinstance(error, commands.MissingPermissions):
-            await ctx.respond("You don't have permission to kick memebers.", ephemeral=True)
+            await ctx.respond("You don't have permission to kick memebers.")
         else:
-            await ctx.respond("An error occurred: {error}", ephemeral=True)
+            await ctx.respond("An error occurred: {error}")
 
     @ban.error
     async def ban_error(self, ctx: discord.ApplicationContext, error):
         if isinstance(error, commands.MissingPermissions):
-            await ctx.respond("You don't have permission to ban members.", ephemeral=True)
+            await ctx.respond("You don't have permission to ban members.")
         else:
-            await ctx.respond(f"Unexpected Error: {error}", ephemeral=True)
+            await ctx.respond(f"Unexpected Error: {error}")
 
     @unban.error
     async def unban_error(self, ctx: discord.ApplicationContext, error):
         if isinstance(error, commands.MissingPermissions):
-            await ctx.respond("You don't have permission to use this command.", ephemeral=True)
+            await ctx.respond("You don't have permission to use this command.")
         else:
-            await ctx.respond(f"Unexpected error: {error}", ephemeral=True)
+            await ctx.respond(f"Unexpected error: {error}")
 
     @clear.error
     async def clear_error(self, ctx, error):
         if isinstance(error, commands.MissingPermissions):
-            await ctx.send("You don't have permission to use this command.", ephemeral=True)
+            await ctx.send("You don't have permission to use this command.")
         elif isinstance(error, commands.BadArgument):
             await ctx.send("Please enter a valid number.")
         else:
@@ -272,9 +276,9 @@ class Moderation(commands.Cog):
     @mute.error
     async def mute_error(self, ctx, error):
         if isinstance(error, commands.MissingPermissions):
-            await ctx.send("You do not have permission to mute users", ephemeral=True)
+            await ctx.send("You do not have permission to mute users")
         elif isinstance(error, commands.MissinRequiredArgument):
-            await ctx.send("Usage: `/mute @user [reason]`", ephemeral=True)
+            await ctx.send("Usage: `/mute @user [reason]`")
         elif isinstance(error, commands.BadArgument):
             await ctx.send("Please mention a valid user.")
         else:
@@ -283,13 +287,13 @@ class Moderation(commands.Cog):
     @unmute.error
     async def unmute_error(self, ctx, error):
         if isinstance(error, commands.MissingPermissions):
-            await ctx.send("You don't have permission to use this command.", ephemeral=True)
+            await ctx.send("You don't have permission to use this command.")
         elif isinstance(error, commands.MissinRequiredArgument):
-            await ctx.send("Usage: `/unmute @user`", ephemeral=True)
+            await ctx.send("Usage: `/unmute @user`")
         elif isinstance(error, commands.BadArgument):
-            await ctx.send("Please mention a valid user.", ephemeral=True)
+            await ctx.send("Please mention a valid user.")
         else:
-            await ctx.send(f"An error occurred: {error}", ephemeral=True)
+            await ctx.send(f"An error occurred: {error}")
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
