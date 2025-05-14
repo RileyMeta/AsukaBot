@@ -19,6 +19,7 @@ class Moderation(commands.Cog):
         # await message.edit(content=f"\n{overall:.2f}ms")
 
     @commands.command(name="serverinfo", help="Show information about the server.")
+    @commands.cooldown(rate=1, per=60.0, type=commands.BucketType.user)
     async def serverinfo(self, ctx):
         guild = ctx.guild
 
@@ -59,7 +60,8 @@ class Moderation(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(name="userinfo", help="Show information about a user")
+    @commands.cooldown(rate=1, per=30.0, type=commands.BucketType.user)
     async def userinfo(self, ctx, member: discord.Member = None):
         member = member or ctx.author
         user = member._user if hasattr(member, "_user") else member
@@ -86,7 +88,8 @@ class Moderation(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(name="avatar", help="Display the profile picture of a user")
+    @commands.cooldown(rate=1, per=60.0, type=commands.BucketType.user)
     async def avatar(self, ctx, member: discord.Member = None):
         member = member or ctx.author # Default to you if you don't provide a member
 
