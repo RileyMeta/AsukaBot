@@ -134,9 +134,48 @@ class Moderation(commands.Cog):
         except Exception as e:
             await ctx.respond(f"An error occurred: {e}", ephemeral=True)
 
-    @commands.command(name="mute", help="Mute a user on the server.")
-    async def mute(user):
-        pass
+    @discord.slash_command(name="mute", description="Mute a user on the server.")
+    @commands.has_permissions(manage_roles=True)
+    async def mute(self, ctx, member: discord.Member, *, reason="No reason provided"):
+        guild = ctx.guild
+        muted_role = discord.utils.get(guild.roles, name="muted")
+
+        if not muted_role:
+            try:
+                muted_role = await guild.create_role(name="muted", reason="Needed for muting members.")
+                for channel in guild.Channels:
+                    await channel.set_permissions(muted_role, send_messages=False, speak=False)
+            except discord.Forbidden:
+                return await ctx.send("I don't have permission to create the muted role.")
+
+        if muted_role in member.roles:
+            await ctx.send(f"{member.mention} is already muted.")
+            return
+
+        await member.add_roles(muted_role, reason=reason)
+        await ctx.send(f"{member.mention} has been muted.\nReason: {reason}")
+
+    @discord.slash_command(name="unmute", description="Unmute a user that was previously muted")
+    @commands.has_permissions(manage_roles=True)
+    async def unmute(self, ctx, member: discord.Member, *, reason="No reason provided"):
+        guild = ctx.guild
+        muted_role = discord.utils.get(guild.roles, name="muted")
+
+        if not muted_role:
+            await ctx.send("There is not `muted` role in this server.")
+            return
+
+        if muted_role not in member.roles:
+            await ctx.send(f"{member.mention} is not muted.")
+            return
+
+        try:
+            await member.remove_roles(muted_role, reason="Unmuted by command")
+            await ctx.send(f"{member.mention} has been unmuted.")
+        except discord.Forbidden:
+            await ctx.send("I do not have permission to remove that role", ephemeral=True)
+        except Exception as e:
+            await ctx.send(f"An error occurred: {e}")
 
     @commands.command(name="clear", help="Delete a number of messages from the chat. (e.g, !clear 10)")
     @commands.has_permissions(manage_messages=True)
@@ -181,13 +220,33 @@ class Moderation(commands.Cog):
     @clear.error
     async def clear_error(self, ctx, error):
         if isinstance(error, commands.MissingPermissions):
-            await ctx.send("You don't have permission to use this command.")
+            await ctx.send("You don't have permission to use this command.", ephemeral=True)
         elif isinstance(error, commands.BadArgument):
             await ctx.send("Please enter a valid number.")
         else:
             await ctx.send(f"An error occurred: {e}")
 
+    @mute.error
+    async def mute_error(self, ctx, error):
+        if isinstance(error, commands.MissingPermissions):
+            await ctx.send("You do not have permission to mute users", ephemeral=True)
+        elif isinstance(error, commands.MissinRequiredArgument):
+            await ctx.send("Usage: `/mute @user [reason]`", ephemeral=True)
+        elif isinstance(error, commands.BadArgument):
+            await ctx.send("Please mention a valid user.")
+        else:
+            await ctx.send(f"An error occurred: {error}")
 
+    @unmute.error
+    async def unmute_error(self, ctx, error):
+        if isinstance(error, commands.MissingPermissions):
+            await ctx.send("You don't have permission to use this command.", ephemeral=True)
+        elif isinstance(error, commands.MissinRequiredArgument):
+            await ctx.send("Usage: `/unmute @user`", ephemeral=True)
+        elif isinstance(error, commands.BadArgument):
+            await ctx.send("Please mention a valid user.", ephemeral=True)
+        else:
+            await ctx.send(f"An error occurred: {error}", ephemeral=True)
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
