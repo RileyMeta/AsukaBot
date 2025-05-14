@@ -43,6 +43,11 @@ class Fun(commands.Cog):
         x = random.randrange(len(a))
         await ctx.respond(a[x])
 
+    @commands.command(name="say", help="Have Asuka say something")
+    @commands.has_permissions(send_messages=True)
+    async def say(self, ctx, *, message: str = "Idiot forgot to make me say something"):
+        await ctx.message.delete()
+        await ctx.send(message)
 
 def setup(bot):
     bot.add_cog(Fun(bot))
