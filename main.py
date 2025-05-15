@@ -16,7 +16,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Load Cogs
 def load_cogs():
-    cogs_list = ['experience', 'moderation', 'fun']
+    cogs_list = ['moderation', 'fun']
     for cog in cogs_list:
         try:
             bot.load_extension(f"cogs.{cog}")
