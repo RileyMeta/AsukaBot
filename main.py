@@ -6,8 +6,8 @@ from discord.ext import commands
 from const import Colors
 import random
 
-CHANNEL_ID = 1266186395127644300
 load_dotenv()
+CHANNEL_ID = os.getenv("BOT_CHANNEL")
 TOKEN = os.getenv("DISCORD_TOKEN")
 
 intents = discord.Intents.default()
@@ -16,7 +16,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Load Cogs
 def load_cogs():
-    cogs_list = ['moderation', 'fun']
+    cogs_list = ['experience', 'moderation', 'fun']
     for cog in cogs_list:
         try:
             bot.load_extension(f"cogs.{cog}")
@@ -35,10 +35,8 @@ async def on_ready():
     print(f"[{Colors.red}{get_timestamp()}{Colors.reset}] Commands synced.")
     print(f"[{Colors.red}{bot.user}{Colors.reset} @ {Colors.red}{get_timestamp()}{Colors.reset}] EVA Unit 2, Standing By.")
 
-# @bot.event
-# async def stop():
-#     print(f"[Time: {get_timestamp()}]")
-#     print(f"[{Colors.yellow}ALERT{reset}] EVA Unit 2, Offline.")
+def stop():
+    print(f"\n[{Colors.yellow}ALERT @ {get_timestamp()}{Colors.reset}] EVA Unit 2, Offline.")
 
 @bot.event
 async def on_member_join(member):
@@ -86,7 +84,7 @@ async def on_member_remove(member):
 
 if __name__ == "__main__":
     load_cogs()
-#    bot.load_extension("cogs.moderation")
     intents.message_content = True
     intents.members = True
     bot.run(TOKEN)
+    stop()
