@@ -36,7 +36,7 @@ async def on_ready():
     print(f"[{Colors.red}{bot.user}{Colors.reset} @ {Colors.red}{get_timestamp()}{Colors.reset}] EVA Unit 2, Standing By.")
 
 def stop():
-    print(f"\n[{Colors.yellow}ALERT @ {get_timestamp()}{Colors.reset}] EVA Unit 2, Offline.")
+    print(f"\n[{Colors.yellow}ALERT{Colors.reset} @ {Colors.yellow}{get_timestamp()}{Colors.reset}] EVA Unit 2, Offline.")
 
 @bot.event
 async def on_member_join(member):
