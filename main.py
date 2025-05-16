@@ -9,13 +9,14 @@ import random
 load_dotenv()
 WELCOMES = int(os.getenv("WELCOMES"))
 LEAVES = int(os.getenv("LEAVES"))
+LOGS = int(os.getenv("LOGS"))
 TOKEN = os.getenv("DISCORD_TOKEN")
 
 intents = discord.Intents.default()
 intents.members = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Load Cogs
+# Dynamically Load Cogs from the `./cogs/` folder
 def load_cogs():
     cogs_list = ['moderation', 'fun']
     for cog in cogs_list:
@@ -71,7 +72,7 @@ async def on_member_remove(member):
             f"{member.display_name} left the GeoFront. Let’s hope the Angels don’t notice.",
             f"{member.display_name} has gone radio silent. God’s in his heaven, all’s right with the world…?",
             f"{member.display_name}\nAnd just like that, another presence fades from the AT Field.",
-            f"{member.display_name}\nOne more vanishes into the void. Stay strong, pilots.",
+            f"{member.display_name} vanished into the void. Stay strong, pilots.",
             f"{member.display_name} logged out of the simulation. Reality awaits.",
             f"{member.display_name}\nAnother entry plug disengaged. Safe travels, pilot."
     ]
@@ -84,6 +85,60 @@ async def on_member_remove(member):
         await channel.send(choice)
     else:
         printf(f"Warning: Could not find channel with ID {LEAVES}")
+
+@bot.event
+async def on_message_edit(before, after):
+    # Ignore DMs
+    if not before.guild:
+        return
+
+    # Ignore bot messages
+    if before.author.bot:
+        return
+
+    # Ignore unchanged content
+    if before.content == after.content:
+        return
+
+    report_channel = bot.get_channel(LOGS)
+    if report_channel:
+        embed = discord.Embed(
+            color=discord.Color.orange(),
+            description=f"[**Message**]({after.jump_url}) changed in **{before.channel.mention}**"
+        )
+        embed.set_author(
+            name=str(before.author),
+            icon_url=before.author.display_avatar.url
+        )
+        embed.add_field(name="Before", value=before.content or "*No content*", inline=False)
+        embed.add_field(name="After", value=after.content or "*No content*", inline=False)
+        embed.timestamp = after.edited_at
+
+        await report_channel.send(embed=embed)
+
+@bot.event
+async def on_message_delete(message):
+    # Same as function above, ignore DMs and Bots
+    if not message.guild:
+        return
+
+    if message.author.bot:
+        return
+
+    report_channel = bot.get_channel(LOGS)
+    if report_channel:
+        embed = discord.Embed(
+            color=discord.Color.red(),
+            description= f"[**Message**]({message.jump_url}) deleted in {message.channel.mention}"
+        )
+        embed.set_author(
+            name=str(message.author),
+            icon_url=message.author.display_avatar.url
+        )
+        embed.add_field(name="Deleted Message", value=message.content or "*No content*", inline=False)
+        embed.timestamp = discord.utils.utcnow()
+
+        await report_channel.send(embed=embed)
 
 if __name__ == "__main__":
     load_cogs()
