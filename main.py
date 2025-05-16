@@ -104,7 +104,7 @@ async def on_message_edit(before, after):
     if report_channel:
         embed = discord.Embed(
             color=discord.Color.orange(),
-            description=f"[**Message**]({after.jump_url}) changed in **{before.channel.mention}**"
+            description=f"[**Message**]({after.jump_url}) edited in **{before.channel.mention}**"
         )
         embed.set_author(
             name=str(before.author),
