@@ -7,7 +7,8 @@ from const import Colors
 import random
 
 load_dotenv()
-CHANNEL_ID = os.getenv("BOT_CHANNEL")
+WELCOMES = int(os.getenv("WELCOMES"))
+LEAVES = int(os.getenv("LEAVES"))
 TOKEN = os.getenv("DISCORD_TOKEN")
 
 intents = discord.Intents.default()
@@ -41,46 +42,48 @@ def stop():
 @bot.event
 async def on_member_join(member):
     messages = [
-            "Welcome, new pilot. Report to the command center — Ikari doesn't like slackers.",
-            "Congratulations! You've been selected for synchronization.",
-            "Welcome to the GeoFront. Try not to cause a Third Impact.",
-            "Another soul joins Nerv. Try not to annoy me as much as Shinji does.",
-            "Initiating entry plug sequence... Welcome aboard, Rookie.",
-            "Welcome! We were starting to think you were another dummy plug.",
-            "Sync ratio rising — we’ve got a new member!",
-            "Welcome to NERV HQ. Don't worry, we won't make you pilot an Eva... probably."
+            f"Welcome, {member.mention}. Report to the command center — Ikari doesn't like slackers.",
+            f"Congratulations {member.mention}! You've been selected for synchronization.",
+            f"Welcome to the GeoFront {member.mention}. Try not to cause a Third Impact.",
+            f"{member.mention}\nAnother soul joins Nerv. Try not to annoy me as much as Shinji does.",
+            f"Initiating entry plug sequence... Welcome aboard, {member.mention}.",
+            f"Welcome {member.mention}! We were starting to think you were another dummy plug.",
+            f"{member.mention}\nSync ratio rising — we’ve got a new member!",
+            f"{member.mention}\nWelcome to NERV HQ. Don't worry, we won't make you pilot an Eva... probably."
     ]
 
-    choice = random.randrange(len(messages) - 1)
+    choice = random.choice(messages)
 
-    channel_id = 1292201687552888872
-    channel = member.guild.get_channel(channel_id)
+    channel = member.guild.get_channel(WELCOMES)
 
     if channel:
-        await channel.send(f"{member.mention}\n{messages[choice]}")
+        await channel.send(choice)
+    else:
+        printf(f"Warning: Could not find channel with ID {WELCOMES}")
 
 @bot.event
 async def on_member_remove(member):
     messages = [
-            "Another soul departs from the command center. Sync ratio lost.",
-            "Connection terminated. Their mission here is complete.",
-            "Pilot has ejected. The LCL will settle without them.",
-            "One less plug in the system. Hold the line.",
-            "They’ve left the GeoFront. Let’s hope the Angels don’t notice.",
-            "They’ve gone radio silent. God’s in his heaven, all’s right with the world…?",
-            "And just like that, another presence fades from the AT Field.",
-            "One more vanishes into the void. Stay strong, pilots.",
-            "They’ve logged out of the simulation. Reality awaits.",
-            "Another entry plug disengaged. Safe travels, pilot."
+            f"{member.display_name}\nAnother soul departs from the command center. Sync ratio lost.",
+            f"{member.display_name}\nConnection terminated. Their mission here is complete.",
+            f"{member.display_name} has ejected. The LCL will settle without them.",
+            f"{member.display_name}\nOne less plug in the system. Hold the line.",
+            f"{member.display_name} left the GeoFront. Let’s hope the Angels don’t notice.",
+            f"{member.display_name} has gone radio silent. God’s in his heaven, all’s right with the world…?",
+            f"{member.display_name}\nAnd just like that, another presence fades from the AT Field.",
+            f"{member.display_name}\nOne more vanishes into the void. Stay strong, pilots.",
+            f"{member.display_name} logged out of the simulation. Reality awaits.",
+            f"{member.display_name}\nAnother entry plug disengaged. Safe travels, pilot."
     ]
 
-    choice = random.randrange(len(messages) - 1)
+    choice = random.choice(messages)
 
-    channel_id = 1292201687552888872
-    channel = member.guild.get_channel(channel_id)
+    channel = member.guild.get_channel(LEAVES)
 
     if channel:
-        await channel.send(f"{member.display_name}\n{messages[choice]}")
+        await channel.send(choice)
+    else:
+        printf(f"Warning: Could not find channel with ID {LEAVES}")
 
 if __name__ == "__main__":
     load_cogs()
