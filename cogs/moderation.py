@@ -271,6 +271,25 @@ class Moderation(commands.Cog):
         for i in range(len(options)):
             await message.add_reaction(emojis[i])
 
+    @discord.slash_command(name="rename", description="Change a user's server nickname")
+    @commands.has_permissions(manage_nicknames=True)
+    async def rename(self, ctx, user: Option(discord.Member, "User"),
+        new_name: Option(str, "New name")
+    ):
+        try:
+            await user.edit(nick=new_name)
+            await ctx.respond(f"Renamed {user.mention} to **{new_name}**", ephemeral=True)
+        except discord.Forbidden:
+            await ctx.respond(f"I do not have permission to change that user's nickname", ephemeral=True)
+        except Exception as e:
+            await ctx.respond("Failed to change nickname: \n{e}", ephemeral=True)
+
+
+
+
+
+
+
 
     ############################
     #      Error handling      #
