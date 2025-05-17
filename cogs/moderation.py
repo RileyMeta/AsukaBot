@@ -1,7 +1,10 @@
+import os
 import time
 import discord
 from discord.ext import commands
 from discord import Option
+
+LOGS = int(os.getenv("LOGS"))
 
 class Moderation(commands.Cog):
     def __init__(self, bot):
@@ -276,16 +279,56 @@ class Moderation(commands.Cog):
     async def rename(self, ctx, user: Option(discord.Member, "User"),
         new_name: Option(str, "New name")
     ):
+
+        old_nick = user.nick or user.name
         try:
             await user.edit(nick=new_name)
             await ctx.respond(f"Renamed {user.mention} to **{new_name}**", ephemeral=True)
+
+            # Log to bot channel
+            log_channel = self.bot.get_channel(LOGS)
+            if log_channel:
+                embed = discord.Embed(
+                    title="Nickname Changed",
+                    description=f"{user.name}'s nickname was changed to {user.mention}.",
+                    color=discord.Color.orange()
+                )
+                embed.add_field(name="Changed by", value=ctx.user.mention, inline=False)
+                embed.add_field(name="Old Nickname", value=old_nick, inline=False)
+                embed.add_field(name="New Nickname", value=user.mention, inline=False)
+                embed.timestamp = discord.utils.utcnow()
+                await log_channel.send(embed=embed)
+
         except discord.Forbidden:
             await ctx.respond(f"I do not have permission to change that user's nickname", ephemeral=True)
         except Exception as e:
             await ctx.respond("Failed to change nickname: \n{e}", ephemeral=True)
 
+    @discord.slash_command(name="resetnick", description="Reset a user's nickname")
+    @commands.has_permissions(manage_nicknames=True)
+    async def resetnick(self, ctx, user: Option(discord.Member, "user")):
+        try:
+            old_nick = user.nick or user.name
+            await user.edit(nick=None)
+            await ctx.respond(f"Nickname reset for {user.mention}", ephemeral=True)
 
+            # Log to bot channel
+            log_channel = self.bot.get_channel(LOGS)
+            if log_channel:
+                embed = discord.Embed(
+                    title="Nickname Reset",
+                    description=f"{user.mention}'s nickname was reset by {ctx.user.mention}.",
+                    color=discord.Color.orange()
+                )
+                embed.add_field(name="Old Nickname", value=old_nick, inline=False)
+                embed.add_field(name="New Nickname", value=user.name, inline=False)
+                embed.timestamp = discord.utils.utcnow()
+                await log_channel.send(embed=embed)
 
+        except discord.Forbidden:
+            await ctx.respond("I do not have permission to reset that nickname.", ephemeral=True)
+        except Exception as e:
+            await ctx.respond(f"Failed to reset nickname \n{e}", ephemeral=True)
 
 
 
