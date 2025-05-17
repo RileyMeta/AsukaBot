@@ -1,6 +1,7 @@
 import time
 import discord
 from discord.ext import commands
+from discord import Option
 
 class Moderation(commands.Cog):
     def __init__(self, bot):
@@ -235,9 +236,40 @@ class Moderation(commands.Cog):
         except Exception as e:
             await ctx.send(f"Unexpected error: {e}")
 
-    @commands.has_permissions(send_polls=True)
-    async def poll(question, options = []):
-        pass
+
+    @discord.slash_command(name="poll", description="Create a poll with up to 10 options")
+    # @commands.has_permissions(send_polls=True)
+    async def poll(
+        self,
+        ctx: discord.ApplicationContext,
+        question: Option(str, "What is the poll question?"),
+        option1: Option(str, "Option 1"),
+        option2: Option(str, "Option 2"),
+        option3: Option(str, "Option 3", required=False),
+        option4: Option(str, "Option 4", required=False),
+        option5: Option(str, "Option 5", required=False),
+        option6: Option(str, "Option 6", required=False),
+        option7: Option(str, "Option 7", required=False),
+        option8: Option(str, "Option 8", required=False),
+        option9: Option(str, "Option 9", required=False),
+        option10: Option(str, "Option 10", required=False)
+    ):
+        options = [opt for opt in [option1, option2, option3, option4, option5,
+                                   option6, option7, option8, option9, option10] if opt]
+
+        if len(options) < 2:
+            await ctx.respond("You must provide at least two options.", ephemeral=True)
+            return
+
+        emojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟']
+        description = "\n".join(f"{emojis[i]} {option}" for i, option in enumerate(options))
+
+        embed = discord.Embed(title=question, description=description, color=discord.Color.blurple())
+        msg = await ctx.respond(embed=embed)
+        message = await msg.original_response()
+
+        for i in range(len(options)):
+            await message.add_reaction(emojis[i])
 
 
     ############################
