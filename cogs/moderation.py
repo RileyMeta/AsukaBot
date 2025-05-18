@@ -222,8 +222,9 @@ class Moderation(commands.Cog):
             await ctx.send(f"{member.mention} is already muted.")
             return
 
+        await ctx.defer()
         await member.add_roles(muted_role, reason=reason)
-        await ctx.send(f"{member.mention} has been muted.\nReason: {reason}")
+        await ctx.followup.send(f"{member.mention} has been muted.\nReason: {reason}")
 
     @discord.slash_command(name="unmute", description="Unmute a user that was previously muted")
     @commands.has_permissions(manage_roles=True)
