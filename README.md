@@ -8,5 +8,12 @@ A general purpose Discord bot written in Python
 2. **Py-cord:** 2.6.1
 3. **dotenv:** 1.1.0
 
+## dotenv:
+- DISCORD_TOKEN
+- WELCOMES
+- LEAVES
+- LOGS
+- TENOR_API_KEY
+
 ## Relicensing
 I am willing to relicense this bot upon request.
