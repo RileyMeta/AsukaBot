@@ -181,6 +181,29 @@ class Moderation(commands.Cog):
         except Exception as e:
             await ctx.respond(f"An error occurred: {e}", ephemeral=True)
 
+    # Actual Muting Logic
+    async def mute_member(self, ctx=None, member: discord.Member = None, reason: str = None, original_message=None):
+        role = discord.utils.get(member.guild.roles, name="muted")
+        if role:
+            await member.add_roles(role, reason=reason)
+
+            log_channel = self.bot.get_channel(LOGS)
+            if log_channel:
+                embed = discord.Embed(
+                    title="User Muted",
+                    description=f"{member.mention} has been muted.",
+                    color=discord.Color.red()
+                )
+                if reason:
+                    embed.add_field(name="Reason", value=reason, inline=False)
+                if original_message:
+                    embed.add_field(name="Message", value=original_message.content, inline=False)
+                embed.timestamp = discord.utils.utcnow()
+                await log_channel.send(embed=embed)
+        else:
+            if ctx:
+                await ctx.send("Muted role was not found.")
+
     @discord.slash_command(name="mute", description="Mute a user on the server.")
     @commands.has_permissions(manage_roles=True)
     async def mute(self, ctx, member: discord.Member, *, reason="No reason provided"):
