@@ -240,8 +240,9 @@ class Moderation(commands.Cog):
             return
 
         try:
+            await ctx.defer()
             await member.remove_roles(muted_role, reason="Unmuted by command")
-            await ctx.send(f"{member.mention} has been unmuted.")
+            await ctx.followup.send(f"{member.mention} has been unmuted.")
         except discord.Forbidden:
             await ctx.send("I do not have permission to remove that role", ephemeral=True)
         except Exception as e:
