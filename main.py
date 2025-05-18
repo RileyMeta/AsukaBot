@@ -18,7 +18,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Dynamically Load Cogs from the `./cogs/` folder
 def load_cogs():
-    cogs_list = ['moderation', 'fun']
+    cogs_list = ['moderation', 'fun', 'automod']
     for cog in cogs_list:
         try:
             bot.load_extension(f"cogs.{cog}")
