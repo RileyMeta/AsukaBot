@@ -1,7 +1,13 @@
-import discord
 from discord.ext import commands
+import discord
+import aiohttp
 import random
 import re
+import os
+
+TENOR_API_KEY = os.getenv("TENOR_API_KEY")
+TENOR_SEARCH_URL = "https://tenor.googleapis.com/v2/search"
+TENOR_TRENDING_URL = "https://tenor.googleapis.com/v2/featured"
 
 class Fun(commands.Cog):
     def __init__(self, bot):
@@ -57,8 +63,8 @@ class Fun(commands.Cog):
             await ctx.send("Baka, provide at least 2 options!")
             return
 
-        choice = random.randrange(len(options) - 1)
-        await ctx.send(f"I choose {options[choice]}")
+        choice = random.choice(options)
+        await ctx.send(f"I choose {choice}")
 
     @commands.command(name="mock", help="hAvE ThE bOt MoCk A MeSsAgE")
     @commands.has_permissions(send_messages=True)
@@ -88,6 +94,52 @@ class Fun(commands.Cog):
         uwu_text += " " + random.choice(faces)
 
         await ctx.send(uwu_text)
+
+    @commands.command(name="gif", help="Post a random gif from tenor")
+    @commands.has_permissions(embed_links=True)
+    async def gif(self, ctx, *, prompt: str = None):
+        try:
+            async with aiohttp.ClientSession() as session:
+                if prompt:
+                    url = TENOR_SEARCH_URL
+                    params = {
+                        "q": prompt,
+                        "key": TENOR_API_KEY,
+                        "limit": 10,
+                        "media_filter": "minimal"
+                    }
+                else:
+                    url = TENOR_TRENDING_URL
+                    params = {
+                        "key": TENOR_API_KEY,
+                        "limit": 10,
+                        "media_filter": "minimal"
+                    }
+
+                async with session.get(url, params=params) as resp:
+                    if resp.status != 200:
+                        await ctx.send("Failed to fetch gif", ephemeral=True)
+                        return
+
+                    data = await resp.json()
+                    results = data.get("results", [])
+
+                    if not results:
+                        await ctx.send("No GIFs found.", ephemeral=True)
+                        return
+
+                    gif_url = random.choice(results)["media_formats"]["gif"]["url"]
+                    await ctx.send(gif_url)
+
+        except discord.Forbidden:
+            await ctx.send("I do not have permission to send GIFs")
+        except aiohttp.ClientError as e:
+            await ctx.send(f"A network error occurred: \n{e}")
+        except KeyError:
+            await ctx.send("Unexpected API response format.")
+        except Exception as e:
+            await ctx.send(f"An unexpected error occurred: \n{e}")
+
 
 def setup(bot):
     bot.add_cog(Fun(bot))
