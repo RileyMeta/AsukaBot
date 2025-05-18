@@ -77,13 +77,6 @@ class Automod(commands.Cog):
                                 original_message=message
                             )
 
-                        # if member:
-                        #     await mod_cog.mute_member(
-                        #         ctx=None,
-                        #         message.author,
-                        #         reason="Used a banned word",
-                        #         original_message=message
-                        #     )
                         else:
                             printf("[Automod] Failed to get member from guild.")
                     else:
