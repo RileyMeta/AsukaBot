@@ -78,7 +78,7 @@ class Automod(commands.Cog):
                             )
 
                         else:
-                            printf("[Automod] Failed to get member from guild.")
+                            print("[Automod] Failed to get member from guild.")
                     else:
                         print("[Automod] Moderation cog not found.")
 
