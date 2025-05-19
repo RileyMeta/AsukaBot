@@ -67,14 +67,15 @@ class Neofetch(commands.Cog):
         username = os.getlogin()
         hostname = platform.node()
         total_swap, used_swap = self.get_swap()
+        arch = platform.machine()
 
         embed = discord.Embed(
             title=f"{username}@{hostname}",
             color=discord.Color.blue()
         )
 
-        embed.add_field(name="OS", value=f"{self.get_kernel()} {self.get_architecture()}", inline=False)
-        embed.add_field(name="Kernel", value=f"{self.get_kernel()}", inline=False)
+        embed.add_field(name="OS", value=f"{self.get_kernel()} {arch}", inline=False)
+        embed.add_field(name="Kernel", value=f"{platform.system()} {self.get_architecture()}", inline=False)
         embed.add_field(name="Uptime", value=f"{self.get_uptime()}", inline=False)
         embed.add_field(name="Shell", value=f"{self.get_terminal()}", inline=False)
         embed.add_field(name="CPU", value=f"{self.get_cpu_name()}", inline=True)
