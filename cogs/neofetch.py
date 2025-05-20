@@ -47,9 +47,9 @@ class Neofetch(commands.Cog):
         return os.environ.get('TERM', 'unknown')
 
     def get_ram(self):
-        total = psutil.virtual_memory().total
-        used = psutil.virtual_memory().used
-        return f"{used // (1024**2)}MiB / {total // (1024**2)}MiB"
+        mem = psutil.virtual_memory()
+        used = mem.total - mem.available
+        return f"{used // (1024**3)}GiB / {mem.total // (1024**3)}GiB"
 
     def get_swap(self):
         swap = psutil.swap_memory()
@@ -80,7 +80,7 @@ class Neofetch(commands.Cog):
         embed.add_field(name="Shell", value=f"{self.get_terminal()}", inline=False)
         embed.add_field(name="CPU", value=f"{self.get_cpu_name()}", inline=True)
         embed.add_field(name="Memory", value=f"{self.get_ram()}", inline=False)
-        embed.add_field(name="Swap", value=f"{used_swap:.2f} GB / {total_swap:.2f} GB", inline=False)
+        embed.add_field(name="Swap", value=f"{used_swap:.2f}GiB / {total_swap:.2f}GiB", inline=False)
         embed.add_field(name="Disk", value=f"{self.get_disk()}", inline=False)
 
         embed.timestamp = discord.utils.utcnow()
