@@ -49,7 +49,7 @@ class Neofetch(commands.Cog):
     def get_ram(self):
         mem = psutil.virtual_memory()
         used = mem.total - mem.available
-        return f"{used // (1024**3)}GiB / {mem.total // (1024**3)}GiB"
+        return used // (1024**3), mem.total // (1024**3)
 
     def get_swap(self):
         swap = psutil.swap_memory()
@@ -66,6 +66,7 @@ class Neofetch(commands.Cog):
     async def neofetch(self, ctx):
         username = os.getlogin()
         hostname = platform.node()
+        used_ram, total_ram = self.get_ram()
         total_swap, used_swap = self.get_swap()
         arch = platform.machine()
 
@@ -79,7 +80,7 @@ class Neofetch(commands.Cog):
         embed.add_field(name="Uptime", value=f"{self.get_uptime()}", inline=False)
         embed.add_field(name="Shell", value=f"{self.get_terminal()}", inline=False)
         embed.add_field(name="CPU", value=f"{self.get_cpu_name()}", inline=True)
-        embed.add_field(name="Memory", value=f"{self.get_ram()}", inline=False)
+        embed.add_field(name="Memory", value=f"{used_ram:.2f}GiB / {total_ram:.2f}GiB", inline=False)
         embed.add_field(name="Swap", value=f"{used_swap:.2f}GiB / {total_swap:.2f}GiB", inline=False)
         embed.add_field(name="Disk", value=f"{self.get_disk()}", inline=False)
 
