@@ -1,8 +1,10 @@
 import os
 import time
+import psutil
 import discord
-from discord.ext import commands
 from discord import Option
+from datetime import datetime
+from discord.ext import commands
 
 LOGS = int(os.getenv("LOGS"))
 
@@ -355,7 +357,14 @@ class Moderation(commands.Cog):
         except Exception as e:
             await ctx.respond(f"Failed to reset nickname \n{e}", ephemeral=True)
 
-
+    @commands.command(name="uptime", help="Get the current up-time of the bot's server")
+    @commands.has_permissions(send_messages=True)
+    async def uptime(self, ctx):
+        boot_time = datetime.fromtimestamp(psutil.boot_time())
+        now = datetime.now()
+        time = now - boot_time
+        uptime = str(time).split('.')[0]
+        await ctx.send(f"Uptime: {uptime}")
 
 
 
